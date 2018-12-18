@@ -1,5 +1,7 @@
 CURLOPTIONS = --silent --show-error --location
 
+all: download-html
+
 include html-download-rules.mk
 
 html-download-rules.mk: link-dowloader.py sitemap.xml
