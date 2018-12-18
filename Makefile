@@ -1,5 +1,9 @@
 CURLOPTIONS = --silent --show-error --location
 
+include html-download-rules.mk
+
+html-download-rules.mk: link-dowloader.py sitemap.xml
+	./$< $@
 
 # We need the sitemap to find all the posts to download.
 sitemap.xml:
