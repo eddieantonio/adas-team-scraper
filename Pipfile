@@ -5,7 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 
-[packages]
-
 [requires]
 python_version = "3.7"
+
+[packages]
+lxml = "*"
