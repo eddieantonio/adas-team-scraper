@@ -7,9 +7,9 @@ all: download-html
 # It will also create a variable called
 # $(HTML) that enumerates each HTML that should be downloaded.
 include html-download-rules.mk
-html-download-rules.mk: link-dowloader.py sitemap.xml
+html-download-rules.mk: create-html-download-rules-from-sitemap.py sitemap.xml
 	./$< $@
 
 # We use the sitemap to find all the posts to download.
 sitemap.xml:
-	curl --fail $(CURLOPTIONS) -o $@ https://adasteam.wordpress.com/sitemap.xm
+	curl --fail $(CURLOPTIONS) -o $@ https://adasteam.wordpress.com/sitemap.xml
