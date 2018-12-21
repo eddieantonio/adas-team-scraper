@@ -7,15 +7,20 @@ all: convert-posts
 # It will also create a variable called
 # $(HTML) that enumerates each HTML that should be downloaded.
 include html-download-rules.mk
-html-download-rules.mk: create-html-download-rules-from-sitemap.py sitemap.xml
-	./$< $@
 
 # Generate posts by running them through html2post
-# Note: $(HTML) variable is generated.
+# Note: $(HTML) variable is generated in html-download-rules.mk.
 convert-posts: $(patsubst _src/%.html,_posts/%.md,$(HTML))
-_posts/%.md: _src/%.html
+_posts/%.md: _src/%.html html2post.py
 	./html2post.py -o $@ $<
+
+# Parse links to blog posts from the sitemap.
+html-download-rules.mk: create-html-download-rules-from-sitemap.py sitemap.xml
+	./$< $@
 
 # We use the sitemap to find all the posts to download.
 sitemap.xml:
 	curl --fail $(CURLOPTIONS) -o $@ https://adasteam.wordpress.com/sitemap.xml
+
+# These are not real targets -- always remake them.
+.PHONY: all convert-posts
