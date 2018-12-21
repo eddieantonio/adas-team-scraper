@@ -10,3 +10,5 @@ python_version = "3.7"
 
 [packages]
 lxml = "*"
+beautifulsoup4 = "*"
+html2text = "*"
