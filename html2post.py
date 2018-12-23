@@ -55,11 +55,20 @@ with open(html_filename, 'r', encoding='UTF-8') as fp:
 # The title is not in <title> but in <meta content="..." property="og:title">
 title = soup.find('meta', attrs={'property': 'og:title'})['content']
 
+# Parse out the blog post, the author, and the content.
+# <div class="type-post">
+#   <a class="author">Author Name</a>
+#   <div class="entry-content">
+#      Here is the blog post...
+#   </div>
+# </div>
 blog_post = soup.article
 assert 'type-post' in blog_post['class']
 author = blog_post.find(class_='author').string
 assert len(author) > 0
 post_content = blog_post.find(class_='entry-content')
+
+# TODO: Find all of the hosted images, and download them to assets/
 
 # Get rid of ads, sharing buttons, and other junk.
 post_content.find(class_='wpcnt').decompose()

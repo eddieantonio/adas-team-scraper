@@ -2,7 +2,7 @@
 ==============
 
 Downloads all of the blog posts on [Ada's Team's WordPress
-site][adasteam-blog] and converts it to [Jekyll][] blog posts.
+site][adasteam-blog] and converts them to [Jekyll][] blog posts.
 
 [adasteam-blog]: https://adasteam.wordpress.com/
 [Jekyll]: https://jekyllrb.com/
