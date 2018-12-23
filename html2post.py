@@ -90,7 +90,7 @@ for img_tag in post_content.find_all('img'):
     # So Wordpress resizes the original to MANY sizes and uses a srcset=""
     # to choose the correct image. For now, we'll just choose the original
     # size.
-    original_uri = img_tag.attrs.get('data-orig-file') or img_uri.geturi()
+    original_uri = img_tag.attrs.get('data-orig-file') or img_uri.geturl()
     alt_text = img_tag['alt']
 
     # Now, throw out the original <img> tag, and redo the attributes
