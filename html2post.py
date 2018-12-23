@@ -28,28 +28,27 @@
 
 """
 Usage:
+    html2post -o MARKDOWN HTML
 
-    html2post -o post.md post.html
+Options:
+    -o MARKDOWN, --output=MARKDOWN   The filename of the output Markdown file.
+
 """
 
 import sys
 from pathlib import Path
 
-from html2text import html2text
 from bs4 import BeautifulSoup
+from docopt import docopt
+from html2text import html2text
 
 
-# Using exit codes defined in sysexits.h:
-# https://www.freebsd.org/cgi/man.cgi?query=sysexits&apropos=0&sektion=0&manpath=FreeBSD+4.3-RELEASE&format=html
-EXIT_USAGE = 64
+# Parse arugments from the docstring 👆
+arguments = docopt(__doc__)
+html_filename = Path(arguments['HTML'])
+post_filename = Path(arguments['--output'])
 
-try:
-    _exec, _o, post_filename, html_filename = sys.argv
-except ValueError:
-    print(f"Invalid arguments: {sys.argv[1:]}",
-          file=sys.stdout)
-    sys.exit(EXIT_USAGE)
-
+# Parse the HTML!
 with open(html_filename, 'r', encoding='UTF-8') as fp:
     soup = BeautifulSoup(fp, 'lxml')
 
@@ -94,10 +93,9 @@ layout: post
 """
 
 # Finally, let's write that file!
-post_path = Path(post_filename)
 # Ensure the parent directory(ies) exist.
-post_path.parent.mkdir(parents=True, exist_ok=True)
-post_path.write_text(output, encoding='UTF-8')
+post_filename.parent.mkdir(parents=True, exist_ok=True)
+post_filename.write_text(output, encoding='UTF-8')
 
 # TODO: create <meta content="..." property="og:title">
 # TODO: create permalink <meta content="" property="og:url">
@@ -116,4 +114,4 @@ post_path.write_text(output, encoding='UTF-8')
 # TODO: <meta content="Promoting Diversity in Computing, Games, and Tech" name="msapplication-tooltip"/>
 # TODO: <meta content="http://www.youtube.com/watch?v=ifNK08mJgOs Ada's Team is back from the 2013 Grace Hopper Celebration of Women in Computing (GHC 2013). We're running a series of posts written by the women who attended GHC 2013 about their impressions of the conference - a speaker who really inspired them, a career path they learned about, companies they interviewed with at…" name="description"/>
 # TODO: RSS feed!
-# TODO: auto sitemap!
+# TODO: Auto sitemap!
