@@ -36,7 +36,8 @@ Options:
 """
 
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 from docopt import docopt
@@ -68,15 +69,52 @@ author = blog_post.find(class_='author').string
 assert len(author) > 0
 post_content = blog_post.find(class_='entry-content')
 
-# TODO: Find all of the hosted images, and download them to assets/
+# Find all of the hosted images, and download them to assets/
+# images is a mapping from: Local image path → remote URI
+images = {}
+for img_tag in post_content.find_all('img'):
+    img_uri = urlparse(img_tag['src'])
+
+    # Skip any NON hosted images.
+    if img_uri.netloc != 'adasteam.files.wordpress.com':
+        print("Skipping image:", img_uri.geturl(), file=sys.stderr)
+        continue
+
+    # Figure out where to put the file.
+    # It will be save to assets/POST_FILENAME/IMAGENAME.ext
+    *_, img_name = img_uri.path.split('/')
+    save_path = PurePosixPath('assets') / post_filename.stem / img_name
+    # Let the URI be determined by Jekyll.
+    jekyll_uri = '{{ site.baseurl }}' / save_path
+
+    # So Wordpress resizes the original to MANY sizes and uses a srcset=""
+    # to choose the correct image. For now, we'll just choose the original
+    # size.
+    original_uri = img_tag.attrs.get('data-orig-file') or img_uri.geturi()
+    alt_text = img_tag['alt']
+
+    # Now, throw out the original <img> tag, and redo the attributes
+    img_tag.attrs.clear()
+    img_tag['src'] = jekyll_uri
+    img_tag['alt'] = alt_text
+
+    # Finally, keep track of it!
+    images[save_path] = original_uri
+
 
 # Get rid of ads, sharing buttons, and other junk.
 post_content.find(class_='wpcnt').decompose()
 post_content.find(class_='sharedaddy').decompose()
+# Get rid of atatags' <div> and <script> tags.
+for item in post_content:
+    if isinstance(item, str):
+        continue
+    elif item.tag == 'script' or item.attrs.get('id', '').startswith('atatags-'):
+        item.decompose()
 
 front_matter = {
-        'title': title,
-        'author': author,
+    'title': title,
+    'author': author,
 }
 markdown = html2text(str(post_content))
 
