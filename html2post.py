@@ -33,6 +33,7 @@ Usage:
 """
 
 import sys
+from pathlib import Path
 
 from html2text import html2text
 from bs4 import BeautifulSoup
@@ -83,6 +84,7 @@ markdown = html2text(str(post_content))
 yaml_front_matter = '\n'.join(f'{key}: {value!r}'
                               for key, value in front_matter.items())
 
+# Buffer the ENTIRE output,
 output = f"""---
 layout: post
 {yaml_front_matter}
@@ -91,8 +93,11 @@ layout: post
 {markdown}
 """
 
-with open(post_filename, 'w', encoding='UTF-8') as fp:
-    fp.write(output)
+# Finally, let's write that file!
+post_path = Path(post_filename)
+# Ensure the parent directory(ies) exist.
+post_path.parent.mkdir(parents=True, exist_ok=True)
+post_path.write_text(output, encoding='UTF-8')
 
 # TODO: create <meta content="..." property="og:title">
 # TODO: create permalink <meta content="" property="og:url">
