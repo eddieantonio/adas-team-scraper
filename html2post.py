@@ -35,6 +35,7 @@ Options:
 
 """
 
+import shlex
 import sys
 from contextlib import redirect_stdout
 from pathlib import Path, PurePosixPath
@@ -146,7 +147,9 @@ if len(images) > 0:
         print(f'{post_filename}: {html_filename}', *images.keys())
         for path, uri in images.items():
             print(f'{path}:')
-            print(f"\tcurl --fail $(CURLOPTONS) -o $@ '{uri}'")
+            # Create the parent directory first!
+            print(f'\tmkdir -p', path.parent)
+            print(f'\tcurl --fail $(CURLOPTIONS) -o $@', shlex.quote(uri))
 
 # TODO: create <meta content="..." property="og:title">
 # TODO: create permalink <meta content="" property="og:url">

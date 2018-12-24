@@ -1,5 +1,6 @@
 # Ignore downloaded content
 sitemap.xml
+assets/
 
 # Ignore generated content
 html-download-rules.mk
