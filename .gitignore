@@ -3,4 +3,5 @@ sitemap.xml
 
 # Ignore generated content
 html-download-rules.mk
+_src/*.d
 _posts/*.md

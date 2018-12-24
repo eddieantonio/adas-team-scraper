@@ -36,6 +36,7 @@ Options:
 """
 
 import sys
+from contextlib import redirect_stdout
 from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse
 
@@ -44,7 +45,7 @@ from docopt import docopt
 from html2text import html2text
 
 
-# Parse arugments from the docstring 👆
+# Parse arugments using the docstring 👆 as a template.
 arguments = docopt(__doc__)
 html_filename = Path(arguments['HTML'])
 post_filename = Path(arguments['--output'])
@@ -101,7 +102,6 @@ for img_tag in post_content.find_all('img'):
     # Finally, keep track of it!
     images[save_path] = original_uri
 
-
 # Get rid of ads, sharing buttons, and other junk.
 post_content.find(class_='wpcnt').decompose()
 post_content.find(class_='sharedaddy').decompose()
@@ -112,14 +112,16 @@ for item in post_content:
     elif item.tag == 'script' or item.attrs.get('id', '').startswith('atatags-'):
         item.decompose()
 
+
+# Finally, we can prepare the Jekyll post!
 front_matter = {
     'title': title,
     'author': author,
 }
-markdown = html2text(str(post_content))
-
 yaml_front_matter = '\n'.join(f'{key}: {value!r}'
                               for key, value in front_matter.items())
+
+markdown = html2text(str(post_content))
 
 # Buffer the ENTIRE output,
 output = f"""---
@@ -134,6 +136,17 @@ layout: post
 # Ensure the parent directory(ies) exist.
 post_filename.parent.mkdir(parents=True, exist_ok=True)
 post_filename.write_text(output, encoding='UTF-8')
+
+# Create the make(1) dependencies file beside the .html file.
+if len(images) > 0:
+    post_dependency_file = html_filename.with_suffix('.d')
+    with open(post_dependency_file, 'w', encoding='UTF-8') as fp,\
+         redirect_stdout(fp):
+        print('ASSETS +=', *images.keys())
+        print(f'{post_filename}: {html_filename}', *images.keys())
+        for path, uri in images.items():
+            print(f'{path}:')
+            print(f"\tcurl --fail $(CURLOPTONS) -o $@ '{uri}'")
 
 # TODO: create <meta content="..." property="og:title">
 # TODO: create permalink <meta content="" property="og:url">
