@@ -1,5 +1,6 @@
 CURLOPTIONS = --silent --show-error --location
 
+
 all: convert-posts download-images
 
 # html-download-rules.mk, once generated, will contain a
@@ -8,14 +9,16 @@ all: convert-posts download-images
 # $(HTML) that enumerates each HTML that should be downloaded.
 include html-download-rules.mk
 
-# html2post.py creates .d files for downloading images.
-# It will
 ASSETS =
+POSTS = $(patsubst _src/%.html,_posts/%.md,$(HTML))
+
+# html2post.py creates .d files for downloading images.
+# It will also append filenames to $(ASSETS).
 -include $(HTML:.html=.d)
 
 # Generate posts by running them through html2post
 # Note: $(HTML) variable is generated in html-download-rules.mk.
-convert-posts: $(patsubst _src/%.html,_posts/%.md,$(HTML))
+convert-posts: $(POSTS)
 _posts/%.md: _src/%.html html2post.py
 	./html2post.py -o $@ $<
 
@@ -29,5 +32,11 @@ html-download-rules.mk: create-html-download-rules-from-sitemap.py sitemap.xml
 sitemap.xml:
 	curl --fail $(CURLOPTIONS) -o $@ https://adasteam.wordpress.com/sitemap.xml
 
+# Remove generated content
+clean:
+	$(RM) $(HTML:.html=.d)
+	$(RM) $(POSTS)
+	$(RM) $(ASSETS)
+
 # These are not real targets -- always remake them.
-.PHONY: all convert-posts download-images
+.PHONY: all clean convert-posts download-images
