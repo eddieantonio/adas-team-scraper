@@ -63,7 +63,7 @@ embedded Makefiles as we're going to take so then you invoke `make`
 again to embed the other Makefiles and by then end of this process,
 you'll have all of the Markdown posts and images!
 
-<iframe src="https://giphy.com/embed/l0IykOsxLECVejOzm" width="480" height="304" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/fx-charlie-always-sunny-l0IykOsxLECVejOzm">via GIPHY</a></p>
+![Pepe Silvia Conspiracy](https://media.giphy.com/media/l0IykOsxLECVejOzm/giphy.gif)
 
 ### Okay, but seriously
 
