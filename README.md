@@ -19,7 +19,9 @@ How to do the thing
  - `pipenv`:  you might have this. Install it like this if you don't: `brew install pipenv`
  - Python 3.7: `pipenv` will probably install this?
 
-Next, install all the things with `pipenv`:
+Clone this repository, and `cd` into it.
+
+Next, install all the Python things with `pipenv`:
 
 ```sh
 pipenv install
@@ -91,14 +93,18 @@ requires `sitemap.xml`. So Make downloads `sitemap.xml` and runs
 `sitemap.xml` lists all of the blog posts online.
 `./html-download-rules.mk` will list all of the URIs to download HTML
 pages. Thus, when Make finally is able to include this file (generated
-by `./create-html-download-rules-from-sitemap.py`), it now knows how to:
+by `./create-html-download-rules-from-sitemap.py`), it now knows:
+
+ - all of the blog posts it must download from the internet and store in `_src/`
+ - all of the required Markdown files it must build in `_posts/`
+ - how to convert a downloaded HTML page in `_src/` to a Markdown file in `_posts/`.
 
 ### But that's not all!
 
 We still need to download images. Along with the Markdown post, the
-`html2post` creates `*.d` Makefile "dependency" files. These files are
-generated such that, in order for the Markdown post to exist, they
-require not only the original HTML, but also all of the images,
+`html2post` creates `*.d` Makefile "dependency" files in `_src/`. These
+files are generated such that, in order for the Markdown post to exist,
+they require not only the original HTML, but also all of the images,
 downloaded in `assets/`. Just as before, each `*.d` file instructs Make
 how to download each image. Then, these rules are included in the main
 Makefile, but _only on the second invocation of make_! (I could have had
@@ -106,7 +112,7 @@ it all in one go, but this was already getting a bit out of hand, so
 I opted for a slightly simpler two-stage process instead).
 
 I probably should have stopped at first stage, or downloaded images in
-`html2post`, but... aw well. ¯\_(ツ)_/¯
+`html2post`, but... aw well.
 
 License
 -------
